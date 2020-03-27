@@ -1,0 +1,26 @@
+name: Crystal CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: crystallang/crystal
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install taglib
+      run: apt update && apt install -y libtag1v5 libtag1-dev
+    - name: Install Crystal dependencies
+      run: shards install
+    - name: Build native extension
+      run: c++ -Wall -Wextra -c -o ./ext/taglib_cr.o ./ext/taglib_cr.cpp
+    - name: Run tests
+      run: crystal spec
