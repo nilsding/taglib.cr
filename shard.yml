@@ -1,0 +1,16 @@
+name: taglib
+version: 0.1.0
+
+authors:
+  - Georg Gadinger <nilsding@nilsding.org>
+
+crystal: 0.33.0
+
+libraries:
+  libtag: '*'
+
+scripts:
+  postinstall: |
+    c++ -Wall -Wextra -c -o ./ext/taglib_cr.o ./ext/taglib_cr.cpp
+
+license: MIT
