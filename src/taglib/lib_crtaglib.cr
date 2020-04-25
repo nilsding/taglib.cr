@@ -19,6 +19,27 @@ lib CrTagLib
     next_ptr : StrList*
   end
 
+  enum FileType
+    Unknown    = -1
+    MPEG       =  0
+    Ogg_Vorbis
+    FLAC
+    MPC
+    WavPack
+    Ogg_Speex
+    Ogg_Opus
+    TrueAudio
+    MP4
+    ASF
+    RIFF_AIFF
+    RIFF_WAV
+    APE
+    Mod
+    S3M
+    IT
+    XM
+  end
+
   type FileRef = Void*
   type AudioProperties = Void*
   type File = Void*
@@ -37,6 +58,7 @@ lib CrTagLib
   fun audio_properties_length_in_seconds = cr_taglib_audio_properties_length_in_seconds(audio_properties : AudioProperties) : Int32
   fun audio_properties_sample_rate = cr_taglib_audio_properties_sample_rate(audio_properties : AudioProperties) : Int32
 
+  fun file_class = cr_taglib_file_class(file : File) : FileType
   fun file_properties = cr_taglib_file_properties(file : File) : StrList*
 
   fun tag_title = cr_taglib_tag_title(tag : Tag) : CrString*

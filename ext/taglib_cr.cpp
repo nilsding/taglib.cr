@@ -1,6 +1,25 @@
 #include <cstring>
+
 #include <taglib/fileref.h>
 #include <taglib/tpropertymap.h>
+
+#include <taglib/aifffile.h>
+#include <taglib/apefile.h>
+#include <taglib/asffile.h>
+#include <taglib/flacfile.h>
+#include <taglib/itfile.h>
+#include <taglib/modfile.h>
+#include <taglib/mp4file.h>
+#include <taglib/mpcfile.h>
+#include <taglib/mpegfile.h>
+#include <taglib/opusfile.h>
+#include <taglib/s3mfile.h>
+#include <taglib/speexfile.h>
+#include <taglib/trueaudiofile.h>
+#include <taglib/vorbisfile.h>
+#include <taglib/wavfile.h>
+#include <taglib/wavpackfile.h>
+#include <taglib/xmfile.h>
 
 extern "C"
 {
@@ -16,6 +35,28 @@ extern "C"
         cr_string_t* str;
         struct str_list* next;
     } str_list_t;
+
+    enum FileType
+    {
+        Unknown = -1,
+        MPEG = 0,
+        Ogg_Vorbis,
+        FLAC,
+        MPC,
+        WavPack,
+        Ogg_Speex,
+        Ogg_Opus,
+        TrueAudio,
+        MP4,
+        ASF,
+        RIFF_AIFF,
+        RIFF_WAV,
+        APE,
+        Mod,
+        S3M,
+        IT,
+        XM,
+    };
 
     static inline cr_string_t* taglib_str_to_cr(TagLib::String taglib_str)
     {
@@ -84,6 +125,82 @@ extern "C"
     int cr_taglib_audio_properties_sample_rate(void* audio_properties)
     {
         return reinterpret_cast<TagLib::AudioProperties*>(audio_properties)->sampleRate();
+    }
+
+    FileType cr_taglib_file_class(void* file)
+    {
+        auto f = reinterpret_cast<TagLib::File*>(file);
+
+        if (dynamic_cast<TagLib::MPEG::File*>(f) != nullptr)
+        {
+            return FileType::MPEG;
+        }
+        if (dynamic_cast<TagLib::Ogg::Vorbis::File*>(f) != nullptr)
+        {
+            return FileType::Ogg_Vorbis;
+        }
+        if (dynamic_cast<TagLib::FLAC::File*>(f) != nullptr)
+        {
+            return FileType::FLAC;
+        }
+        if (dynamic_cast<TagLib::MPC::File*>(f) != nullptr)
+        {
+            return FileType::MPC;
+        }
+        if (dynamic_cast<TagLib::WavPack::File*>(f) != nullptr)
+        {
+            return FileType::WavPack;
+        }
+        if (dynamic_cast<TagLib::Ogg::Speex::File*>(f) != nullptr)
+        {
+            return FileType::Ogg_Speex;
+        }
+        if (dynamic_cast<TagLib::Ogg::Opus::File*>(f) != nullptr)
+        {
+            return FileType::Ogg_Opus;
+        }
+        if (dynamic_cast<TagLib::TrueAudio::File*>(f) != nullptr)
+        {
+            return FileType::TrueAudio;
+        }
+        if (dynamic_cast<TagLib::MP4::File*>(f) != nullptr)
+        {
+            return FileType::MP4;
+        }
+        if (dynamic_cast<TagLib::ASF::File*>(f) != nullptr)
+        {
+            return FileType::ASF;
+        }
+        if (dynamic_cast<TagLib::RIFF::AIFF::File*>(f) != nullptr)
+        {
+            return FileType::RIFF_AIFF;
+        }
+        if (dynamic_cast<TagLib::RIFF::WAV::File*>(f) != nullptr)
+        {
+            return FileType::RIFF_WAV;
+        }
+        if (dynamic_cast<TagLib::APE::File*>(f) != nullptr)
+        {
+            return FileType::APE;
+        }
+        if (dynamic_cast<TagLib::Mod::File*>(f) != nullptr)
+        {
+            return FileType::Mod;
+        }
+        if (dynamic_cast<TagLib::S3M::File*>(f) != nullptr)
+        {
+            return FileType::S3M;
+        }
+        if (dynamic_cast<TagLib::IT::File*>(f) != nullptr)
+        {
+            return FileType::IT;
+        }
+        if (dynamic_cast<TagLib::XM::File*>(f) != nullptr)
+        {
+            return FileType::XM;
+        }
+
+        return FileType::Unknown;
     }
 
     str_list_t* cr_taglib_file_properties(void* file)

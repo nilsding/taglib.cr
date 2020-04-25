@@ -23,7 +23,10 @@ module TagLib
       @fileref = CrTagLib.fileref_new(filename.to_unsafe)
 
       file = CrTagLib.fileref_file(@fileref)
-      @file = File.new(file) unless file.null?
+      unless file.null?
+        file_type = CrTagLib.file_class(file)
+        @file = file_class(file_type).new(file)
+      end
 
       audio_props = CrTagLib.fileref_audio_properties(@fileref)
       @audio_properties = AudioProperties.new(audio_props) unless audio_props.null?
@@ -35,6 +38,15 @@ module TagLib
     # :nodoc:
     def finalize
       CrTagLib.fileref_delete(@fileref)
+    end
+
+    private def file_class(file_type : CrTagLib::FileType)
+      case file_type
+      when .flac?
+        FLAC::File
+      else
+        File
+      end
     end
   end
 end

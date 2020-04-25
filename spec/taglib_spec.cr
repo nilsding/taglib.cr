@@ -3,6 +3,7 @@ require "./spec_helper"
 silence_file = File.expand_path("./fixtures/silence.flac", __DIR__)
 untagged_file = File.expand_path("./fixtures/silence_untagged.flac", __DIR__)
 invalid_file = File.expand_path("./fixtures/not_an_audio_file.txt", __DIR__)
+mp3_file = File.expand_path("./fixtures/silence.mp3", __DIR__)
 
 describe TagLib do
   it "can get the information from audio files" do
@@ -80,5 +81,12 @@ describe TagLib do
     fileref.file.should be_nil
     fileref.tag.should be_nil
     fileref.audio_properties.should be_nil
+  end
+
+  it "uses a concrete file class if one exists" do
+    fileref = TagLib::FileRef.new(silence_file)
+    fileref.file.should be_a(TagLib::FLAC::File)
+    fileref = TagLib::FileRef.new(mp3_file)
+    fileref.file.should be_a(TagLib::File)
   end
 end
