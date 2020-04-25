@@ -9,6 +9,10 @@ module TagLib
       raise ArgumentError.new("not a valid file") if @file.null?
 
       @properties = {} of String => Array(String)
+      read_file_properties
+    end
+
+    private def read_file_properties
       strlist = CrTagLib.file_properties(@file)
 
       current = strlist
