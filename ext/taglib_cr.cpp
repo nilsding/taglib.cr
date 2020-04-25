@@ -36,6 +36,12 @@ extern "C"
         struct str_list* next;
     } str_list_t;
 
+    typedef struct ptr_list
+    {
+        void* ptr;
+        struct ptr_list* next;
+    } ptr_list_t;
+
     enum FileType
     {
         Unknown = -1,
@@ -277,9 +283,83 @@ extern "C"
         return t->isEmpty();
     }
 
-    void cr_taglib_free_str(cr_string_t* str)
+    ptr_list_t* cr_taglib_flac_file_picture_list(void* flac_file)
     {
-        free(const_cast<char*>(str->data));
+        auto f = reinterpret_cast<TagLib::FLAC::File*>(flac_file);
+        TagLib::List<TagLib::FLAC::Picture*> pictures = f->pictureList();
+        ptr_list_t* list_head = new ptr_list_t{.ptr = nullptr, .next = nullptr};
+        ptr_list_t* tail = list_head;
+
+        for (TagLib::List<TagLib::FLAC::Picture*>::ConstIterator i = pictures.begin(); i != pictures.end(); ++i)
+        {
+            tail->ptr = *i;
+
+            ptr_list_t* last = new ptr_list_t{.ptr = nullptr, .next = nullptr};
+            tail->next = last;
+            tail = last;
+        }
+
+        return list_head;
+    }
+
+    int cr_taglib_flac_picture_type(void* flac_picture)
+    {
+        auto p = reinterpret_cast<TagLib::FLAC::Picture*>(flac_picture);
+        return p->type();
+    }
+
+    cr_string_t* cr_taglib_flac_picture_data(void* flac_picture)
+    {
+        auto p = reinterpret_cast<TagLib::FLAC::Picture*>(flac_picture);
+        auto d = p->data();
+
+        // Since the data is represented as a char* internally, we can just reuse
+        // the cr_string_t struct to later create a Slice(UInt8) in Crystal.
+        return new cr_string_t{.data = d.data(), .length = d.size()};
+    }
+
+    cr_string_t* cr_taglib_flac_picture_mime_type(void* flac_picture)
+    {
+        auto p = reinterpret_cast<TagLib::FLAC::Picture*>(flac_picture);
+        return taglib_str_to_cr(p->mimeType());
+    }
+
+    cr_string_t* cr_taglib_flac_picture_description(void* flac_picture)
+    {
+        auto p = reinterpret_cast<TagLib::FLAC::Picture*>(flac_picture);
+        return taglib_str_to_cr(p->description());
+    }
+
+    int cr_taglib_flac_picture_width(void* flac_picture)
+    {
+        auto p = reinterpret_cast<TagLib::FLAC::Picture*>(flac_picture);
+        return p->width();
+    }
+
+    int cr_taglib_flac_picture_height(void* flac_picture)
+    {
+        auto p = reinterpret_cast<TagLib::FLAC::Picture*>(flac_picture);
+        return p->height();
+    }
+
+    int cr_taglib_flac_picture_color_depth(void* flac_picture)
+    {
+        auto p = reinterpret_cast<TagLib::FLAC::Picture*>(flac_picture);
+        return p->colorDepth();
+    }
+
+    int cr_taglib_flac_picture_num_colors(void* flac_picture)
+    {
+        auto p = reinterpret_cast<TagLib::FLAC::Picture*>(flac_picture);
+        return p->numColors();
+    }
+
+    void cr_taglib_free_str(cr_string_t* str, int free_string)
+    {
+        if (free_string)
+        {
+            free(const_cast<char*>(str->data));
+        }
         delete str;
     }
 
@@ -288,7 +368,18 @@ extern "C"
         auto last = list->next;
         while (last != nullptr)
         {
-            cr_taglib_free_str(list->str);
+            cr_taglib_free_str(list->str, true);
+            delete list;
+            list = last;
+            last = list->next;
+        }
+    }
+
+    void cr_taglib_free_ptr_list(ptr_list_t* list)
+    {
+        auto last = list->next;
+        while (last != nullptr)
+        {
             delete list;
             list = last;
             last = list->next;

@@ -19,6 +19,11 @@ lib CrTagLib
     next_ptr : StrList*
   end
 
+  struct PtrList
+    ptr : Void*
+    next_ptr : PtrList*
+  end
+
   enum FileType
     Unknown    = -1
     MPEG       =  0
@@ -44,6 +49,7 @@ lib CrTagLib
   type AudioProperties = Void*
   type File = Void*
   type Tag = Void*
+  type FLACPicture = Void*
 
   fun fileref_new = cr_taglib_fileref_new(filename : UInt8*) : FileRef
   fun fileref_delete = cr_taglib_fileref_delete(fileref : FileRef)
@@ -70,8 +76,19 @@ lib CrTagLib
   fun tag_track = cr_taglib_tag_track(tag : Tag) : UInt32
   fun tag_is_empty = cr_taglib_tag_is_empty(tag : Tag) : Bool
 
-  fun free_str = cr_taglib_free_str(cr_str : CrString*)
+  fun flac_file_picture_list = cr_taglib_flac_file_picture_list(file : File) : PtrList*
+  fun flac_picture_type = cr_taglib_flac_picture_type(flac_picture : FLACPicture) : Int32
+  fun flac_picture_data = cr_taglib_flac_picture_data(flac_picture : FLACPicture) : CrString*
+  fun flac_picture_mime_type = cr_taglib_flac_picture_mime_type(flac_picture : FLACPicture) : CrString*
+  fun flac_picture_description = cr_taglib_flac_picture_description(flac_picture : FLACPicture) : CrString*
+  fun flac_picture_width = cr_taglib_flac_picture_width(flac_picture : FLACPicture) : Int32
+  fun flac_picture_height = cr_taglib_flac_picture_height(flac_picture : FLACPicture) : Int32
+  fun flac_picture_color_depth = cr_taglib_flac_picture_color_depth(flac_picture : FLACPicture) : Int32
+  fun flac_picture_num_colors = cr_taglib_flac_picture_num_colors(flac_picture : FLACPicture) : Int32
+
+  fun free_str = cr_taglib_free_str(cr_str : CrString*, free_string : Bool)
   fun free_str_list = cr_taglib_free_str_list(str_list : StrList*)
+  fun free_ptr_list = cr_taglib_free_ptr_list(ptr_list : PtrList*)
 end
 
 module TagLib
@@ -79,7 +96,7 @@ module TagLib
   # :nodoc:
   protected def self.convert_string(str : CrTagLib::CrString*) : String
     cr_str = String.new(str.value.data, str.value.length)
-    CrTagLib.free_str(str)
+    CrTagLib.free_str(str, true)
     cr_str
   end
 end

@@ -4,6 +4,7 @@ silence_file = File.expand_path("./fixtures/silence.flac", __DIR__)
 untagged_file = File.expand_path("./fixtures/silence_untagged.flac", __DIR__)
 invalid_file = File.expand_path("./fixtures/not_an_audio_file.txt", __DIR__)
 mp3_file = File.expand_path("./fixtures/silence.mp3", __DIR__)
+pictures_file = File.expand_path("./fixtures/silence_pictures.flac", __DIR__)
 
 describe TagLib do
   it "can get the information from audio files" do
@@ -88,5 +89,31 @@ describe TagLib do
     fileref.file.should be_a(TagLib::FLAC::File)
     fileref = TagLib::FileRef.new(mp3_file)
     fileref.file.should be_a(TagLib::File)
+  end
+
+  it "loads pictures from FLAC files" do
+    fileref = TagLib::FileRef.new(pictures_file)
+    fileref.file.should be_a(TagLib::FLAC::File)
+
+    flac_file = fileref.file.as(TagLib::FLAC::File)
+    flac_file.pictures.size.should eq 3
+
+    [
+      {TagLib::FLAC::Picture::Type::FrontCover, "image/png",
+       "yellow loudspeaker emitting rays", 32, 32, 4, 7, 497},
+      {TagLib::FLAC::Picture::Type::ColouredFish, "image/png",
+       "Xiph.org Foundation logo", 132, 126, 32, 0, 7933},
+      {TagLib::FLAC::Picture::Type::LeadArtist, "image/jpeg",
+       "das ist der Hackerblick™!", 256, 256, 24, 0, 47887},
+    ].each_with_index do |(type, mime_type, description, width, height, color_depth, num_colors, byte_size), i|
+      flac_file.pictures[i].type.should eq type
+      flac_file.pictures[i].mime_type.should eq mime_type
+      flac_file.pictures[i].description.should eq description
+      flac_file.pictures[i].width.should eq width
+      flac_file.pictures[i].height.should eq height
+      flac_file.pictures[i].color_depth.should eq color_depth
+      flac_file.pictures[i].num_colors.should eq num_colors
+      flac_file.pictures[i].data.size.should eq byte_size
+    end
   end
 end
