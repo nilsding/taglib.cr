@@ -11,7 +11,7 @@
 lib CrTagLib
   struct CrString
     data : UInt8*
-    length : UInt64
+    length : LibC::SizeT
   end
 
   struct StrList
