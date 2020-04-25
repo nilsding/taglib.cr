@@ -1,0 +1,31 @@
+name: Generate API Docs
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: crystallang/crystal
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Clone docs
+      run: git clone --branch gh-pages https://github.com/${{ github.repository }} docs
+    - name: Clean up docs
+      run: cd docs && git rm -rf .
+    - name: Install Crystal dependencies
+      run: shards install
+    - name: Generate docs
+      run: crystal doc
+    - name: Push the API docs
+      run: |
+        cd docs
+        git config --global user.name "Kaisrrerr"
+        git config --global user.email "kais@rrerr.net"
+        git add .
+        git commit --allow-empty -m "[skip ci] Rebuild site"
+        git push -q https://${{ secrets.TOKEN_FOR_DOCS }}@github.com/${{ github.repository }} gh-pages
