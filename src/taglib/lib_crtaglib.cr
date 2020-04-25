@@ -51,3 +51,13 @@ lib CrTagLib
   fun free_str = cr_taglib_free_str(cr_str : CrString*)
   fun free_str_list = cr_taglib_free_str_list(str_list : StrList*)
 end
+
+module TagLib
+  # Converts a CrString* to a String, and frees the reference afterwards.
+  # :nodoc:
+  protected def self.convert_string(str : CrTagLib::CrString*) : String
+    cr_str = String.new(str.value.data, str.value.length)
+    CrTagLib.free_str(str)
+    cr_str
+  end
+end

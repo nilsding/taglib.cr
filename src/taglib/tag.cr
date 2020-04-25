@@ -19,25 +19,11 @@ module TagLib
 
     # :nodoc:
     def initialize(@tag : CrTagLib::Tag)
-      tmp_str = CrTagLib.tag_title(@tag)
-      @title = String.new(tmp_str.value.data, tmp_str.value.length)
-      CrTagLib.free_str(tmp_str)
-
-      tmp_str = CrTagLib.tag_artist(@tag)
-      @artist = String.new(tmp_str.value.data, tmp_str.value.length)
-      CrTagLib.free_str(tmp_str)
-
-      tmp_str = CrTagLib.tag_album(@tag)
-      @album = String.new(tmp_str.value.data, tmp_str.value.length)
-      CrTagLib.free_str(tmp_str)
-
-      tmp_str = CrTagLib.tag_comment(@tag)
-      @comment = String.new(tmp_str.value.data, tmp_str.value.length)
-      CrTagLib.free_str(tmp_str)
-
-      tmp_str = CrTagLib.tag_genre(@tag)
-      @genre = String.new(tmp_str.value.data, tmp_str.value.length)
-      CrTagLib.free_str(tmp_str)
+      @title = TagLib.convert_string(CrTagLib.tag_title(@tag))
+      @artist = TagLib.convert_string(CrTagLib.tag_artist(@tag))
+      @album = TagLib.convert_string(CrTagLib.tag_album(@tag))
+      @comment = TagLib.convert_string(CrTagLib.tag_comment(@tag))
+      @genre = TagLib.convert_string(CrTagLib.tag_genre(@tag))
 
       @year = CrTagLib.tag_year(@tag)
       @track = CrTagLib.tag_track(@tag)
