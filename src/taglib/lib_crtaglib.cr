@@ -19,10 +19,10 @@ lib CrTagLib
     next_ptr : StrList*
   end
 
-  alias FileRef = Void*
-  alias AudioProperties = Void*
-  alias File = Void*
-  alias Tag = Void*
+  type FileRef = Void*
+  type AudioProperties = Void*
+  type File = Void*
+  type Tag = Void*
 
   fun fileref_new = cr_taglib_fileref_new(filename : UInt8*) : FileRef
   fun fileref_delete = cr_taglib_fileref_delete(fileref : FileRef)
