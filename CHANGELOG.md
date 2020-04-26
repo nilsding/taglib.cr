@@ -6,6 +6,8 @@ and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.1.1] - 2020-04-26
 ### Added
 - `TagLib::FLAC::File` and `TagLib::FLAC::Picture` classes -- extracting the
   pictures of a FLAC file works now
@@ -19,5 +21,6 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Initial release, supporting only the basic functionality of TagLib's C++
   library
 
-[Unreleased]: https://github.com/nilsding/taglib.cr/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/nilsding/taglib.cr/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/nilsding/taglib.cr/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/nilsding/taglib.cr/releases/tag/v0.1.0
